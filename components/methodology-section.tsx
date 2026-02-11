@@ -26,6 +26,7 @@ export function MethodologySection() {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left column */}
           <div>
+            <div className="editorial-rule mb-6" />
             <span className="text-xs font-medium text-muted-foreground uppercase tracking-[0.2em] mb-3 block">
               Sobre este proyecto
             </span>
@@ -60,17 +61,15 @@ export function MethodologySection() {
             {sources.map((source) => {
               const Icon = source.icon
               return (
-                <div key={source.title} className="bg-card border border-border rounded-lg p-5">
+                <div key={source.title} className="bg-card border border-border rounded-sm p-5">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="p-2 bg-secondary rounded-lg">
-                      <Icon className="h-4 w-4 text-foreground" />
-                    </div>
-                    <h3 className="font-medium text-foreground">{source.title}</h3>
+                    <Icon className="h-4 w-4 text-accent" />
+                    <h3 className="font-serif font-medium text-foreground">{source.title}</h3>
                   </div>
                   <ul className="space-y-2">
                     {source.items.map((item) => (
                       <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                        <span className="w-1.5 h-1.5 bg-accent" />
                         {item}
                       </li>
                     ))}

@@ -1,95 +1,138 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
-import { TrendingUp, Users, Wifi, Brain } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
+import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 
 const insights = [
   {
-    icon: Wifi,
     value: "78%",
+    numericValue: 78,
+    suffix: "%",
     label: "Penetración de internet",
     description: "de la población tiene acceso a internet en 2025",
     change: "+55% desde 2010",
   },
   {
-    icon: Users,
     value: "520M",
+    numericValue: 520,
+    suffix: "M",
     label: "Usuarios de smartphone",
     description: "personas utilizan teléfonos inteligentes",
     change: "+1,400% desde 2010",
   },
   {
-    icon: TrendingUp,
     value: "$280B",
+    numericValue: 280,
+    suffix: "B",
+    prefix: "$",
     label: "Economía digital",
     description: "valor del comercio electrónico regional",
     change: "+180% desde 2019",
   },
   {
-    icon: Brain,
     value: "45%",
+    numericValue: 45,
+    suffix: "%",
     label: "Adopción de IA",
     description: "de empresas usan herramientas de IA",
     change: "Nuevo indicador 2023",
   },
 ]
 
-function InsightCard({
-  insight,
-  index,
+function AnimatedCounter({
+  value,
+  suffix = "",
+  prefix = "",
+  isVisible,
 }: {
-  insight: (typeof insights)[0]
-  index: number
+  value: number
+  suffix?: string
+  prefix?: string
+  isVisible: boolean
 }) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
+  const [count, setCount] = useState(0)
+  const hasAnimated = useRef(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.3 },
-    )
+    if (!isVisible || hasAnimated.current) return
+    hasAnimated.current = true
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current)
-    }
+    const duration = 1000
+    const steps = 40
+    const stepTime = duration / steps
+    let current = 0
+    let step = 0
 
-    return () => observer.disconnect()
-  }, [])
+    const timer = setInterval(() => {
+      step++
+      // Ease-out curve
+      const progress = 1 - Math.pow(1 - step / steps, 3)
+      current = Math.round(value * progress)
+      setCount(current)
 
-  const Icon = insight.icon
+      if (step >= steps) {
+        setCount(value)
+        clearInterval(timer)
+      }
+    }, stepTime)
+
+    return () => clearInterval(timer)
+  }, [isVisible, value])
+
+  return (
+    <span className="data-figure">
+      {prefix}{isVisible ? count : 0}{suffix}
+    </span>
+  )
+}
+
+function InsightStep({
+  insight,
+}: {
+  insight: (typeof insights)[number]
+}) {
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.5 })
 
   return (
     <div
-      ref={cardRef}
-      className={`bg-card border border-border rounded-lg p-6 transition-all duration-500 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-      style={{ transitionDelay: `${index * 100}ms` }}
+      ref={ref}
+      className="min-h-[60vh] flex items-center justify-center px-4"
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className="p-2 bg-secondary rounded-lg">
-          <Icon className="h-5 w-5 text-foreground" />
-        </div>
-        <span className="text-xs text-accent font-medium">{insight.change}</span>
+      <div
+        className={`max-w-md mx-auto text-center transition-all duration-700 ease-out ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <span className="text-6xl lg:text-8xl font-bold text-foreground block mb-4">
+          <AnimatedCounter
+            value={insight.numericValue}
+            suffix={insight.suffix}
+            prefix={insight.prefix}
+            isVisible={isVisible}
+          />
+        </span>
+        <span className="text-lg font-medium text-foreground block mb-2">{insight.label}</span>
+        <p className="text-muted-foreground mb-3">{insight.description}</p>
+        <span className="text-sm text-accent font-medium">{insight.change}</span>
       </div>
-      <div className="text-4xl font-bold text-foreground mb-1">{insight.value}</div>
-      <div className="text-sm font-medium text-foreground mb-2">{insight.label}</div>
-      <p className="text-sm text-muted-foreground">{insight.description}</p>
     </div>
   )
 }
 
 export function KeyInsights() {
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal()
+
   return (
-    <section id="hallazgos" className="py-16 lg:py-24 bg-secondary/30 scroll-mt-20">
+    <section id="hallazgos" className="scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12">
+        <div
+          ref={headerRef}
+          className={`text-center py-16 lg:py-24 transition-all duration-500 ease-out ${
+            headerVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+          }`}
+        >
+          <div className="editorial-rule mx-auto mb-6" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-[0.2em] mb-3 block">
             Datos Clave
           </span>
@@ -100,30 +143,13 @@ export function KeyInsights() {
             Los indicadores que mejor reflejan el avance digital de América Latina entre 2010 y 2025.
           </p>
         </div>
+      </div>
 
-        {/* Insights Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {insights.map((insight, index) => (
-            <InsightCard key={insight.label} insight={insight} index={index} />
-          ))}
-        </div>
-
-        {/* Quote */}
-        <div className="mt-16 max-w-3xl mx-auto text-center">
-          <blockquote className="relative">
-            <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-6xl text-accent/20 font-serif">"</div>
-            <p className="font-serif text-xl sm:text-2xl text-foreground leading-relaxed italic">
-              La pandemia comprimió una década de transformación digital en apenas dos años. Lo que vemos hoy es una
-              región que avanzó a pasos agigantados, pero también una que dejó atrás a millones.
-            </p>
-            <footer className="mt-6">
-              <cite className="not-italic">
-                <span className="text-foreground font-medium">Dra. Ana Martínez</span>
-                <span className="text-muted-foreground"> — Directora, Observatorio Digital CEPAL</span>
-              </cite>
-            </footer>
-          </blockquote>
-        </div>
+      {/* Scrollytelling steps */}
+      <div className="border-y border-border">
+        {insights.map((insight) => (
+          <InsightStep key={insight.label} insight={insight} />
+        ))}
       </div>
     </section>
   )

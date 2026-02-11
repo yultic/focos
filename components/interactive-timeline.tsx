@@ -1,8 +1,7 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
-import { Calendar, MapPin, TrendingUp, Users, Wifi, Smartphone, Shield, Brain } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
+import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { Calendar, MapPin } from "lucide-react"
 
 interface TimelineEvent {
   year: string
@@ -10,10 +9,8 @@ interface TimelineEvent {
   title: string
   description: string
   details: string
-  icon: LucideIcon
   stats?: { label: string; value: string }
   location?: string
-  image?: string
 }
 
 interface TimelinePeriod {
@@ -37,7 +34,6 @@ const timelineData: TimelinePeriod[] = [
         description: "CEPAL lanza el primer plan coordinado para expandir conectividad en América Latina.",
         details:
           "El plan estableció metas ambiciosas: llevar banda ancha al 50% de hogares para 2015 y crear marcos regulatorios armonizados.",
-        icon: Wifi,
         stats: { label: "Hogares conectados", value: "23%" },
         location: "Santiago, Chile",
       },
@@ -48,7 +44,6 @@ const timelineData: TimelinePeriod[] = [
         description: "La penetración de teléfonos inteligentes supera por primera vez el 15% en la región.",
         details:
           "Brasil y México lideran la adopción, impulsados por planes de financiamiento y la llegada de dispositivos económicos.",
-        icon: Smartphone,
         stats: { label: "Usuarios móviles", value: "340M" },
       },
       {
@@ -58,7 +53,6 @@ const timelineData: TimelinePeriod[] = [
         description: "Colombia aprueba legislación pionera en protección de datos siguiendo estándares europeos.",
         details:
           "La Ley 1581 establece principios de consentimiento, finalidad y seguridad que servirán de modelo para otros países.",
-        icon: Shield,
         location: "Bogotá, Colombia",
       },
     ],
@@ -76,7 +70,6 @@ const timelineData: TimelinePeriod[] = [
         description: "Por primera vez, más del 60% del tráfico web regional proviene de dispositivos móviles.",
         details:
           "Este cambio obliga a empresas y gobiernos a rediseñar sus servicios digitales con enfoque móvil prioritario.",
-        icon: Smartphone,
         stats: { label: "Tráfico móvil", value: "62%" },
       },
       {
@@ -86,7 +79,6 @@ const timelineData: TimelinePeriod[] = [
         description: "Nubank alcanza 1 millón de usuarios, marcando el inicio de la revolución fintech.",
         details:
           "Las startups financieras comienzan a ofrecer servicios bancarios a poblaciones tradicionalmente excluidas del sistema formal.",
-        icon: TrendingUp,
         stats: { label: "Usuarios Nubank", value: "1M" },
         location: "São Paulo, Brasil",
       },
@@ -97,7 +89,6 @@ const timelineData: TimelinePeriod[] = [
         description: "La cobertura 4G LTE alcanza al 70% de la población urbana en los principales mercados.",
         details:
           "Brasil, México, Chile y Argentina lideran la expansión, permitiendo nuevos servicios de streaming y comunicación.",
-        icon: Wifi,
         stats: { label: "Cobertura urbana", value: "70%" },
       },
     ],
@@ -115,7 +106,6 @@ const timelineData: TimelinePeriod[] = [
         description: "El comercio electrónico regional alcanza los 100 mil millones de dólares anuales.",
         details:
           "Mercado Libre se consolida como el jugador dominante mientras Amazon intensifica su expansión regional.",
-        icon: TrendingUp,
         stats: { label: "Ventas anuales", value: "$100B" },
       },
       {
@@ -125,7 +115,6 @@ const timelineData: TimelinePeriod[] = [
         description: "La pandemia obliga a 150 millones de estudiantes a migrar a educación virtual.",
         details:
           "La crisis expone la brecha digital: mientras las ciudades se adaptan, millones en zonas rurales quedan excluidos.",
-        icon: Users,
         stats: { label: "Estudiantes afectados", value: "150M" },
       },
       {
@@ -135,7 +124,6 @@ const timelineData: TimelinePeriod[] = [
         description: "El 35% de trabajadores formales adoptan modalidades híbridas o remotas permanentes.",
         details:
           "Las empresas latinoamericanas redefinen sus políticas laborales, impulsando demanda de herramientas colaborativas.",
-        icon: Users,
         stats: { label: "Trabajo remoto", value: "35%" },
       },
     ],
@@ -152,7 +140,6 @@ const timelineData: TimelinePeriod[] = [
         title: "Primeras redes 5G comerciales",
         description: "Brasil y Chile inauguran las primeras redes 5G de alta velocidad en América Latina.",
         details: "La nueva tecnología promete revolucionar industria 4.0, telemedicina y ciudades inteligentes.",
-        icon: Wifi,
         stats: { label: "Velocidad promedio", value: "500Mbps" },
         location: "São Paulo y Santiago",
       },
@@ -162,7 +149,6 @@ const timelineData: TimelinePeriod[] = [
         title: "ChatGPT transforma el trabajo",
         description: "El 45% de empresas medianas y grandes experimentan con herramientas de IA generativa.",
         details: "La adopción acelera debates sobre regulación, derechos de autor y el futuro del empleo en la región.",
-        icon: Brain,
         stats: { label: "Empresas usando IA", value: "45%" },
       },
       {
@@ -172,7 +158,6 @@ const timelineData: TimelinePeriod[] = [
         description: "Se aprueba el primer acuerdo regional para regulación de inteligencia artificial.",
         details:
           "El marco establece principios de transparencia, no discriminación y supervisión humana para sistemas de IA de alto riesgo.",
-        icon: Shield,
         location: "Ciudad de México",
       },
     ],
@@ -180,88 +165,96 @@ const timelineData: TimelinePeriod[] = [
 ]
 
 function TimelineCard({ event, index }: { event: TimelineEvent; index: number }) {
-  const cardRef = useRef<HTMLDivElement>(null)
-  const [isVisible, setIsVisible] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.2, rootMargin: "-50px" },
-    )
-
-    if (cardRef.current) {
-      observer.observe(cardRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
-  const Icon = event.icon
+  const { ref, isVisible } = useScrollReveal({ threshold: 0.2 })
 
   return (
     <div
-      ref={cardRef}
-      className={`relative transition-all duration-700 ease-out ${
+      ref={ref}
+      className={`w-[85vw] sm:w-[45vw] lg:w-[35vw] flex-shrink-0 snap-center transition-all duration-600 ease-out ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       }`}
-      style={{ transitionDelay: `${index * 100}ms` }}
+      style={{ transitionDelay: `${index * 150}ms` }}
     >
-      {/* Timeline connector */}
-      <div className="absolute left-6 top-0 bottom-0 w-px bg-border md:left-1/2 md:-translate-x-px" />
+      <div className="bg-card border border-border rounded-sm p-6 h-full flex flex-col">
+        {/* Header: date + location */}
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Calendar className="h-4 w-4" />
+            <span className="font-mono tabular-nums">
+              {event.month} {event.year}
+            </span>
+          </div>
+          {event.location && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <MapPin className="h-3 w-3" />
+              {event.location}
+            </div>
+          )}
+        </div>
 
-      {/* Event marker */}
-      <div className="absolute left-6 top-8 w-3 h-3 rounded-full bg-accent border-4 border-background -translate-x-1/2 z-10 md:left-1/2" />
+        {/* Title */}
+        <h4 className="font-serif text-xl font-semibold text-foreground mb-3">{event.title}</h4>
 
-      {/* Content */}
+        {/* Description */}
+        <p className="text-muted-foreground text-sm leading-relaxed mb-4">{event.description}</p>
+
+        {/* Details — editorial annotation style */}
+        <p className="text-muted-foreground/80 text-sm leading-relaxed mb-4 border-l-2 border-accent pl-4 italic">
+          {event.details}
+        </p>
+
+        {/* Stat */}
+        {event.stats && (
+          <div className="mt-auto pt-4 border-t border-border">
+            <span className="data-figure text-3xl font-bold text-foreground">{event.stats.value}</span>
+            <span className="text-xs text-muted-foreground ml-2">{event.stats.label}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function PeriodSection({ period }: { period: TimelinePeriod }) {
+  const { ref: introRef, isVisible: introVisible } = useScrollReveal({ threshold: 0.1 })
+
+  return (
+    <div id={period.id} className="scroll-mt-32">
+      {/* Period intro */}
       <div
-        className={`ml-14 md:ml-0 md:w-[calc(50%-2rem)] ${
-          index % 2 === 0 ? "md:mr-auto md:pr-8" : "md:ml-auto md:pl-8"
+        ref={introRef}
+        className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 transition-all duration-500 ease-out ${
+          introVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        <div className="bg-card border border-border rounded-lg p-5 hover:shadow-lg transition-shadow duration-300">
-          {/* Header */}
-          <div className="flex items-start justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Calendar className="h-4 w-4" />
-              <span>
-                {event.month} {event.year}
-              </span>
-            </div>
-            <div className="p-2 bg-secondary rounded-lg">
-              <Icon className="h-4 w-4 text-foreground" />
-            </div>
-          </div>
+        <div className="flex items-center gap-4 mb-4">
+          <span className="font-mono tabular-nums text-sm font-medium text-accent">{period.id}</span>
+          <div
+            className="flex-1 h-px bg-border origin-left"
+            style={{
+              animation: introVisible ? "line-extend 1000ms ease-out 200ms forwards" : "none",
+              transform: introVisible ? undefined : "scaleX(0)",
+            }}
+          />
+        </div>
+        <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-foreground mb-3">{period.title}</h3>
+        <p className="text-muted-foreground max-w-2xl leading-relaxed">{period.summary}</p>
+      </div>
 
-          {/* Title */}
-          <h4 className="font-serif text-xl font-semibold text-foreground mb-2">{event.title}</h4>
+      {/* Horizontal scrolling cards with staggered reveal */}
+      <div className="relative">
+        <div className="horizontal-scroll flex gap-4 px-4 sm:px-6 lg:px-8 pb-4">
+          <div className="flex-shrink-0 w-[calc((100vw-72rem)/2)] hidden lg:block" />
+          {period.events.map((event, index) => (
+            <TimelineCard key={`${event.year}-${event.month}`} event={event} index={index} />
+          ))}
+          <div className="flex-shrink-0 w-4 sm:w-6 lg:w-8" />
+        </div>
 
-          {/* Description */}
-          <p className="text-muted-foreground text-sm leading-relaxed mb-3">{event.description}</p>
-
-          {/* Details */}
-          <p className="text-muted-foreground/80 text-sm leading-relaxed mb-4 border-l-2 border-accent/30 pl-3">
-            {event.details}
-          </p>
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-3 border-t border-border">
-            {event.stats && (
-              <div>
-                <span className="text-2xl font-bold text-foreground">{event.stats.value}</span>
-                <span className="text-xs text-muted-foreground ml-2">{event.stats.label}</span>
-              </div>
-            )}
-            {event.location && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" />
-                {event.location}
-              </div>
-            )}
-          </div>
+        {/* Mobile swipe indicator */}
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-2 sm:hidden">
+          <span>Deslizar</span>
+          <span aria-hidden="true">&rarr;</span>
         </div>
       </div>
     </div>
@@ -271,25 +264,9 @@ function TimelineCard({ event, index }: { event: TimelineEvent; index: number })
 export function InteractiveTimeline() {
   return (
     <section id="cronologia" className="py-16 lg:py-24 scroll-mt-32">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="space-y-16">
         {timelineData.map((period) => (
-          <div key={period.id} id={period.id} className="mb-20 last:mb-0 scroll-mt-32">
-            {/* Period Header */}
-            <div className="text-center mb-12">
-              <span className="inline-block px-4 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-full mb-4">
-                {period.id}
-              </span>
-              <h3 className="font-serif text-2xl sm:text-3xl font-semibold text-foreground mb-3">{period.title}</h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">{period.summary}</p>
-            </div>
-
-            {/* Events */}
-            <div className="relative space-y-8">
-              {period.events.map((event, index) => (
-                <TimelineCard key={`${event.year}-${event.month}`} event={event} index={index} />
-              ))}
-            </div>
-          </div>
+          <PeriodSection key={period.id} period={period} />
         ))}
       </div>
     </section>

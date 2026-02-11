@@ -24,11 +24,14 @@ const socialLinks = [
 export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground">
+      {/* Red editorial rule at top */}
+      <div className="h-1 bg-accent" />
+
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-7 h-7 bg-primary-foreground rounded-sm flex items-center justify-center">
+              <div className="w-7 h-7 bg-primary-foreground flex items-center justify-center">
                 <span className="font-serif text-base font-bold text-primary">F</span>
               </div>
               <span className="font-serif text-xl font-semibold">Focos</span>
@@ -41,7 +44,7 @@ export function Footer() {
                 <a
                   key={social.label}
                   href={social.href}
-                  className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors"
+                  className="p-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors duration-150"
                   aria-label={social.label}
                 >
                   <social.icon className="h-4 w-4" />
@@ -58,7 +61,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-150"
                   >
                     {link.label}
                   </Link>
@@ -75,7 +78,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors"
+                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-150"
                   >
                     {link.label}
                   </Link>
