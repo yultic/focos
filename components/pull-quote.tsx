@@ -9,7 +9,7 @@ interface PullQuoteProps {
 }
 
 export function PullQuote({ quote, author, role }: PullQuoteProps) {
-  const { ref, isVisible } = useScrollReveal({ threshold: 0.2 })
+  const { ref, isVisible } = useScrollReveal<HTMLElement>({ threshold: 0.2 })
 
   // Split quote into lines for staggered reveal
   const words = quote.split(" ")
@@ -20,7 +20,7 @@ export function PullQuote({ quote, author, role }: PullQuoteProps) {
   ]
 
   return (
-    <section
+    <aside
       ref={ref}
       className="full-bleed bg-primary text-primary-foreground py-20 lg:py-32"
     >
@@ -67,6 +67,6 @@ export function PullQuote({ quote, author, role }: PullQuoteProps) {
           }}
         />
       </div>
-    </section>
+    </aside>
   )
 }

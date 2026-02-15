@@ -20,7 +20,7 @@
   --accent: oklch(0.50 0.18 25);
   --accent-foreground: oklch(0.97 0.005 80);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.97 0.005 80);
   --border: oklch(0.86 0.01 80);
   --input: oklch(0.90 0.008 80);
   --ring: oklch(0.50 0.18 25);
@@ -120,7 +120,6 @@
   .horizontal-scroll {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
   }
@@ -159,6 +158,20 @@
   /* Scroll snap center */
   .snap-center {
     scroll-snap-align: center;
+  }
+
+  /* Prose container for narrative text */
+  .prose-container {
+    @apply max-w-3xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Drop cap for first paragraph */
+  .drop-cap::first-letter {
+    @apply font-serif font-bold text-foreground float-left;
+    font-size: 3.5em;
+    line-height: 0.8;
+    margin-right: 0.08em;
+    margin-top: 0.05em;
   }
 }
 
@@ -199,18 +212,6 @@
   from {
     opacity: 0;
     transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Counter tick animation */
-@keyframes counter-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
   }
   to {
     opacity: 1;

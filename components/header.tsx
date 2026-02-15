@@ -3,19 +3,25 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const navItems = [
-  { label: "Inicio", href: "#inicio" },
-  { label: "Cronología", href: "#cronologia" },
-  { label: "Hallazgos", href: "#hallazgos" },
-  { label: "Metodología", href: "#metodologia" },
+  { label: "Inicio", href: "/" },
+  { label: "Reportajes", href: "/#reportajes" },
+  { label: "Nosotros", href: "/#nosotros" },
 ]
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsOpen(false)
+  }, [pathname])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,11 +44,11 @@ export function Header() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo — real SVG, switches between white and black */}
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image
               src={isTransparent ? "/focostv-logo-white.svg" : "/focostv-logo-black.svg"}
-              alt="Focos TV"
+              alt="FOCOS"
               width={90}
               height={20}
               priority
@@ -72,6 +78,8 @@ export function Header() {
             size="icon"
             className={`md:hidden ${isTransparent ? "text-white hover:bg-white/10" : ""}`}
             onClick={() => setIsOpen(!isOpen)}
+            aria-expanded={isOpen}
+            aria-controls="mobile-nav"
           >
             {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             <span className="sr-only">Menú</span>
@@ -80,6 +88,8 @@ export function Header() {
 
         {/* Mobile Navigation */}
         <nav
+          id="mobile-nav"
+          aria-hidden={!isOpen}
           className={`md:hidden overflow-hidden transition-all duration-300 ease-out ${
             isOpen ? "max-h-64 opacity-100" : "max-h-0 opacity-0"
           }`}
@@ -90,6 +100,7 @@ export function Header() {
                 <Link
                   key={item.label}
                   href={item.href}
+                  tabIndex={isOpen ? 0 : -1}
                   className="text-base text-muted-foreground hover:text-foreground transition-colors duration-150 py-2"
                   onClick={() => setIsOpen(false)}
                 >

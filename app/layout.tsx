@@ -1,4 +1,3 @@
-import type React from "react"
 import type { Metadata, Viewport } from "next"
 import { Inter, Playfair_Display, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
@@ -22,10 +21,25 @@ const geistMono = Geist_Mono({
   display: "swap",
 })
 
+const siteDescription =
+  "Periodismo de investigación multimedia centroamericano desde el exilio. Reportajes de largo aliento sobre tecnología, migración, derechos humanos y democracia."
+
 export const metadata: Metadata = {
-  title: "Focostv | Transformación Digital en América Latina",
-  description:
-    "Una cronología interactiva que documenta los hitos, desafíos y oportunidades de la revolución tecnológica en América Latina desde 2010 hasta 2025.",
+  metadataBase: new URL("https://focos.tv"),
+  title: {
+    template: "%s | FOCOS",
+    default: "FOCOS | Periodismo de investigación centroamericano",
+  },
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    locale: "es_CR",
+    siteName: "FOCOS",
+    description: siteDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
 }
 
 export const viewport: Viewport = {

@@ -1,12 +1,12 @@
 import Link from "next/link"
 import { Twitter, Linkedin, Mail } from "lucide-react"
+import { reportajes } from "@/lib/reportajes-data"
 
 const footerLinks = {
-  secciones: [
-    { label: "Inicio", href: "#inicio" },
-    { label: "Cronología", href: "#cronologia" },
-    { label: "Hallazgos", href: "#hallazgos" },
-    { label: "Metodología", href: "#metodologia" },
+  navegacion: [
+    { label: "Inicio", href: "/" },
+    { label: "Reportajes", href: "/#reportajes" },
+    { label: "Nosotros", href: "/#nosotros" },
   ],
   legal: [
     { label: "Política de privacidad", href: "#" },
@@ -18,7 +18,7 @@ const footerLinks = {
 const socialLinks = [
   { icon: Twitter, href: "#", label: "Twitter" },
   { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Mail, href: "#", label: "Email" },
+  { icon: Mail, href: "mailto:contacto@focos.tv", label: "Email" },
 ]
 
 export function Footer() {
@@ -28,16 +28,16 @@ export function Footer() {
       <div className="h-1 bg-accent" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="sm:col-span-2 lg:col-span-1">
             <Link href="/" className="inline-flex items-center gap-2 mb-4">
               <div className="w-7 h-7 bg-primary-foreground flex items-center justify-center">
                 <span className="font-serif text-base font-bold text-primary">F</span>
               </div>
-              <span className="font-serif text-xl font-semibold">Focos</span>
+              <span className="font-serif text-xl font-semibold">FOCOS</span>
             </Link>
             <p className="text-primary-foreground/70 text-sm leading-relaxed mb-6">
-              Periodismo de investigación basado en datos. Historias que importan, contadas con claridad.
+              Periodismo de investigación centroamericano desde el exilio. Historias que importan, contadas con profundidad.
             </p>
             <div className="flex gap-3">
               {socialLinks.map((social) => (
@@ -53,17 +53,34 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Sections */}
+          {/* Navegación */}
           <div>
             <h4 className="font-medium text-sm uppercase tracking-wider mb-4 text-primary-foreground/80">Navegación</h4>
             <ul className="space-y-3">
-              {footerLinks.secciones.map((link) => (
+              {footerLinks.navegacion.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
                     className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-150"
                   >
                     {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Reportajes */}
+          <div>
+            <h4 className="font-medium text-sm uppercase tracking-wider mb-4 text-primary-foreground/80">Reportajes</h4>
+            <ul className="space-y-3">
+              {reportajes.map((r) => (
+                <li key={r.slug}>
+                  <Link
+                    href={`/reportajes/${r.slug}`}
+                    className="text-sm text-primary-foreground/60 hover:text-primary-foreground transition-colors duration-150"
+                  >
+                    {r.title}
                   </Link>
                 </li>
               ))}
@@ -91,15 +108,22 @@ export function Footer() {
           <div>
             <h4 className="font-medium text-sm uppercase tracking-wider mb-4 text-primary-foreground/80">Contacto</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/60">
-              <li>contacto@focos.com</li>
-              <li>San Salvador, El Salvador C.A.</li>
+              <li>
+                <a
+                  href="mailto:contacto@focos.tv"
+                  className="hover:text-primary-foreground transition-colors duration-150"
+                >
+                  contacto@focos.tv
+                </a>
+              </li>
+              <li>San José, Costa Rica</li>
             </ul>
           </div>
         </div>
 
         {/* Bottom */}
         <div className="mt-12 pt-8 border-t border-primary-foreground/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-primary-foreground/50">© 2026 Focos. Todos los derechos reservados.</p>
+          <p className="text-xs text-primary-foreground/50">© {new Date().getFullYear()} FOCOS. Todos los derechos reservados.</p>
           <p className="text-xs text-primary-foreground/50">Contenido bajo licencia Creative Commons BY-NC-SA 4.0</p>
         </div>
       </div>
