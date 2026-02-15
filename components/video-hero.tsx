@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect } from "react"
 import Image from "next/image"
 import { ChevronDown } from "lucide-react"
-import { useReducedMotion } from "@/hooks/use-reduced-motion"
+import { useParallax } from "@/hooks/use-parallax"
 
 interface VideoHeroProps {
   videoUrl?: string
@@ -12,11 +12,8 @@ interface VideoHeroProps {
 export function VideoHero({
   videoUrl = "https://res.cloudinary.com/dop4qm8ku/video/upload/video_pe4d44.mp4",
 }: VideoHeroProps) {
-  const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
-  const [scrollY, setScrollY] = useState(0)
-  const rafId = useRef(0)
-  const reducedMotion = useReducedMotion()
+  const { opacity, translateY, reducedMotion } = useParallax(0.3)
 
   useEffect(() => {
     if (reducedMotion && videoRef.current) {
@@ -24,33 +21,12 @@ export function VideoHero({
     }
   }, [reducedMotion])
 
-  useEffect(() => {
-    if (reducedMotion) return
-
-    const onScroll = () => {
-      cancelAnimationFrame(rafId.current)
-      rafId.current = requestAnimationFrame(() => {
-        setScrollY(window.scrollY)
-      })
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => {
-      cancelAnimationFrame(rafId.current)
-      window.removeEventListener("scroll", onScroll)
-    }
-  }, [reducedMotion])
-
-  const opacity = Math.max(0, 1 - scrollY / (typeof window !== "undefined" ? window.innerHeight * 0.8 : 800))
-  const translateY = scrollY * 0.3
-
   const scrollToContent = () => {
-    document.getElementById("capitulo-1")?.scrollIntoView({ behavior: "smooth" })
+    document.getElementById("nosotros")?.scrollIntoView({ behavior: "smooth" })
   }
 
   return (
     <section
-      ref={sectionRef}
       id="inicio"
       className="relative h-[100dvh] flex items-center justify-center overflow-hidden"
     >
@@ -64,6 +40,7 @@ export function VideoHero({
         playsInline
         preload="metadata"
         poster="/trafico.jpg"
+        aria-hidden="true"
       >
         <source src={videoUrl} type="video/mp4" />
       </video>
@@ -92,7 +69,7 @@ export function VideoHero({
         >
           <Image
             src="/focostv-logo-white.svg"
-            alt="Focos TV"
+            alt="FOCOS"
             width={160}
             height={35}
             priority
@@ -108,7 +85,7 @@ export function VideoHero({
         >
           <span className="h-px w-12 bg-white/40" />
           <span className="text-xs font-medium uppercase tracking-[0.2em] text-white/80">
-            Investigación Especial
+            Periodismo de Investigación
           </span>
           <span className="h-px w-12 bg-white/40" />
         </div>
@@ -130,8 +107,8 @@ export function VideoHero({
             animation: "text-reveal-up 600ms ease-out 1200ms both",
           }}
         >
-          Una cronología interactiva que documenta los hitos, desafíos y oportunidades de la revolución tecnológica en
-          la región desde 2010 hasta 2025.
+          Cuatro reportajes multimedia que documentan quince años de revolución tecnológica en la región,
+          desde los cimientos digitales hasta la era de la inteligencia artificial.
         </p>
 
         {/* Meta */}
@@ -141,11 +118,9 @@ export function VideoHero({
             animation: "text-reveal-up 600ms ease-out 1200ms both",
           }}
         >
-          <span>Por Equipo de Investigación</span>
+          <span>Por Equipo FOCOS</span>
           <span className="hidden sm:block w-1 h-1 rounded-full bg-white/50" />
-          <span className="font-mono tabular-nums">15 enero 2026</span>
-          <span className="hidden sm:block w-1 h-1 rounded-full bg-white/50" />
-          <span className="font-mono tabular-nums">12 min de lectura</span>
+          <span className="font-mono tabular-nums">San José, Costa Rica</span>
         </div>
 
         {/* Scroll indicator */}
